@@ -2,9 +2,12 @@ import {
     isType
 } from 'utils';
 import Dep from './dep';
+let uid = 0;
 export class Watcher {
     // expOrFn 暂时为函数
     constructor(vm, expOrFn, cb) {
+        this.depIds = [];
+        this.id = uid++;
         this.oldValue = null;
         this.cb = cb;
         this.vm = vm;
@@ -32,5 +35,14 @@ export class Watcher {
         if (isType(this.cb, 'function')) {
             this.cb.call(this.vm, this.get(), this.oldValue);
         }
+    }
+    // 添加观察者
+    addDep(dep) {
+        let depId = dep.id;
+        if (this.depIds.indexOf(depId) > -1) {
+            return;
+        }
+        dep.addSub(this);
+        this.depIds.push(depId);
     }
 }

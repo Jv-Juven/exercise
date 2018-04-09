@@ -23,8 +23,10 @@ function def(obj, key, val, enumerable) {
     });
 }
 
+let uid = 0;
 class Dep {
     constructor() {
+        this.id = uid++;
         // 订阅者列表
         this.subs = [];
     }
@@ -38,8 +40,13 @@ class Dep {
     // 收集依赖
     depend() {
         console.warn('watacher', Dep.target);
-        this.subs.push(Dep.target);
+        Dep.target.addDep(this);
+        // this.subs.push(Dep.target);
         console.warn('subs', this.subs);
+    }
+    // 添加订阅者
+    addSub(sub) {
+        this.subs.push(sub);
     }
 }
 // 依赖收集桥梁，全局唯一，同一时刻只有一个watcher会赋值，随之会通知dep实例收集依赖
@@ -108,9 +115,12 @@ class Observer {
     }
 }
 
+let uid$1 = 0;
 class Watcher {
     // expOrFn 暂时为函数
     constructor(vm, expOrFn, cb) {
+        this.depIds = [];
+        this.id = uid$1++;
         this.oldValue = null;
         this.cb = cb;
         this.vm = vm;
@@ -138,6 +148,15 @@ class Watcher {
         if (isType(this.cb, 'function')) {
             this.cb.call(this.vm, this.get(), this.oldValue);
         }
+    }
+    // 添加观察者
+    addDep(dep) {
+        let depId = dep.id;
+        if (this.depIds.indexOf(depId) > -1) {
+            return;
+        }
+        dep.addSub(this);
+        this.depIds.push(depId);
     }
 }
 
