@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Class</title>
+</head>
+<body>
+	<script src="./dist/ob.js"></script>
+	<script>
+		var v = new V({
+			data: function () {
+				return {
+					firstName: 'Stiven',
+					lastName: 'Forward',
+					babyName: 'Coby',
+					family: {
+						dad: 'Handsome',
+						mum: 'Beautiful',
+						home: {
+							address: '广东广州海珠区'
+						}
+					}
+				};
+			},
+			computed: {
+				fullName: function () {
+					return this.firstName + ' ' + this.lastName;
+				},
+				otherName: function () {
+					return this.firstName + ' ' + this.babyName;
+				},
+				address: function () {
+					return this.family.home.address;
+				}
+			}
+		});
+		console.log('v', v);
+	</script>
+</body>
+</html>

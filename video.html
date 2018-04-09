@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>菜鸟教程(runoob.com)</title>
+</head>
+
+<body>
+    <video id="video1" width="400" height="800" controls>
+        <source src="./asset/1.mp4" type="video/mp4">
+    </video>
+    <br/>
+    <input type="text" id="showTime" />
+    <br/>
+    <input type="text" id="startTime" />
+    <br/>
+    <input type="text" id="endTime" />
+    <br/>
+</body>
+<script src="https://res.wx.qq.com/mmbizwap/zh_CN/htmledition/js/vconsole/3.0.0/vconsole.min.js"></script>
+<script>
+var vConsole = new VConsole();
+window.onload = function() {
+    start();
+}
+var beforePlay, beforeGetStatus;
+var currentTimeEl = document.getElementById("showTime");
+var startTimeEl = document.getElementById("startTime");
+var endTimeEl = document.getElementById("endTime");
+
+// 播放
+function start() {
+	beforeGetStatus = new Date().getTime();
+    var status = Math.ceil(Math.random() * 10);
+	console.log('获取数据耗时', (new Date().getTime() - beforeGetStatus) + '毫秒');
+    var startTime = status;
+    var endTime = status + 4;
+
+    // playMedia(startTime, endTime);
+
+    myVid.currentTime = startTime;
+    myVid.play();
+    beforePlay && console.log('从结束到下次播放耗时' + (new Date().getTime() - beforePlay)+ '毫秒');
+    _endTime = endTime;
+
+    startTimeEl.value = startTime;
+    endTimeEl.value = endTime;
+}
+
+var _endTime;
+var myVid = document.getElementById("video1");
+
+myVid.addEventListener("timeupdate", timeupdate);
+
+// 检测视频播放时间
+function timeupdate() {
+    //因为当前的格式是带毫秒的float类型的如：12.231233，所以把他转成String了便于后面分割取秒
+    // var time = myVid.currentTime + "";
+    currentTimeEl.value = myVid.currentTime;
+    // var ts = time.substring(0, time.indexOf("."));
+
+    if (Math.floor(myVid.currentTime) == _endTime) {
+       
+        beforePlay = new Date().getTime();
+        // myVid.pause();
+        start();
+    }
+}
+
+//视频播放
+function playMedia(startTime, endTime) {
+    //设置结束时间
+    myVid.currentTime = startTime;
+    myVid.play();
+    beforePlay && console.log('从结束到下次播放耗时' + (new Date().getTime() - beforePlay)+ '毫秒');
+    _endTime = endTime;
+    // myVid.pause();
+}
+</script>
+
+</html>

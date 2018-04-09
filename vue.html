@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Vue</title>
+</head>
+<body>
+	<div id="app" class="app-class">
+		<span class="text">
+			<span>前面&nbsp;&#162;</span>年糕 <span>你好</span>
+		</span>
+		{{info.name}}
+	</div>
+	<!-- <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script> -->
+	<script src="./asset/vue.js"></script>
+	<script>
+		// function Vue() {
+		// 	console.log(this instanceof Vue);
+		// }
+		// new Vue();
+		
+		let vm = new Vue({
+			el: "#app",
+			data: function () {
+				return {
+					message: '一段历史',
+					info: {
+						name: '亚德林'
+					}
+				};
+			}
+			// mounted() {
+			// 	this.$set(this.info, 'name', 'Jacker');
+			// }
+		});
+		console.log('vue', vm);
+
+		// let obj = {};
+		// Object.defineProperty(obj, 'name', {
+		// 	get: function () {
+		// 		return '固定名字';
+		// 	},
+		// 	set: function (value) {
+		// 		console.log('设置的值为：', value);
+		// 	}
+		// });
+		// let bibao = function (value) {
+		// 	let val = value;
+		// 	return function () {
+		// 		return val++;
+		// 	}
+		// }
+		// let a = bibao(1);
+		// let b = bibao(10);
+		// console.log('a', a());
+		// console.log('a', a());
+		// console.log('b', b());
+		// console.log('b', b());
+	</script>
+</body>
+</html>
