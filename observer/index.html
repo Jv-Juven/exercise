@@ -18,8 +18,18 @@
 						mum: 'Beautiful',
 						home: {
 							address: '广东广州海珠区'
-						}
-					}
+						},
+						members: [
+							'dad',
+							'mum',
+							'Stiven'
+						]
+					},
+					books: [
+						'战争与和平',
+						'傲慢与偏见',
+						'三体'
+					]
 				};
 			},
 			computed: {
@@ -31,6 +41,9 @@
 				},
 				address: function () {
 					return this.family.home.address;
+				},
+				mum: function () {
+					return this.family.members[1];
 				}
 			}
 		});

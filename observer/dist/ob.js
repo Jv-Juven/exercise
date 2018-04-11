@@ -26,6 +26,7 @@ function def(obj, key, val, enumerable) {
 let uid = 0;
 class Dep {
     constructor() {
+        // 唯一标识
         this.id = uid++;
         // 订阅者列表
         this.subs = [];
@@ -39,10 +40,10 @@ class Dep {
     }
     // 收集依赖
     depend() {
-        console.warn('watacher', Dep.target);
+        // console.warn('watacher', Dep.target);
         Dep.target.addDep(this);
         // this.subs.push(Dep.target);
-        console.warn('subs', this.subs);
+        // console.warn('subs', this.subs);
     }
     // 添加订阅者
     addSub(sub) {
@@ -52,6 +53,81 @@ class Dep {
 // 依赖收集桥梁，全局唯一，同一时刻只有一个watcher会赋值，随之会通知dep实例收集依赖
 Dep.target = null;
 
+// 处理数组变动重写数组方法，并触发数组更新
+var arrayProto = Array.prototype;
+const arrayMethods = Object.create(arrayProto);
+[
+    'push',
+    'pop',
+    'shift',
+    'unshift',
+    'splice',
+    'sort',
+    'reverse'
+].forEach((method) => {
+    let original = arrayProto[method];
+    def(arrayMethods, method, function (...args) {
+        let ob = this.__ob__;
+        let result = original.apply(this, args);
+        let inserted;
+        switch(method) {
+            case 'push':
+                inserted = args[0];
+                break;
+            case 'unshift':
+                inserted = args[0];
+                break;
+            case 'splice':
+                inserted = args.slice(2);
+                break;
+        }
+        if (inserted) ob.observeArray(inserted);
+        ob.dep.notify();
+        return result;
+    }, true);
+});
+// 以下是复制vuejs 1.0.28 的代码
+/**
+ * Swap the element at the given index with a new value
+ * and emits corresponding event.
+ *
+ * @param {Number} index
+ * @param {*} val
+ * @return {*} - replaced element
+ */
+
+def(
+    arrayProto,
+    '$set',
+    function $set(index, val) {
+        if (index >= this.length) {
+            this.length = Number(index) + 1;
+        }
+        return this.splice(index, 1, val)[0]
+    }
+);
+
+/**
+ * Convenience method to remove the element at given index or target element reference.
+ *
+ * @param {*} item
+ */
+
+def(
+    arrayProto,
+    '$remove',
+    function $remove(item) {
+        /* istanbul ignore if */
+        if (!this.length) return
+        var index = indexOf(this, item);
+        if (index > -1) {
+            return this.splice(index, 1)
+        }
+    }
+);
+
+// const arrayKeys = Object.getOwnPropertyNames(arrayMethods);
+console.warn('arrayMethods', arrayMethods);
 const defineReactive = function (obj, key, val) {
     let dep = new Dep();
     // 对象递归添加观察者和收集依赖
@@ -91,7 +167,7 @@ const observe = function (val) {
     if (isObject(val) && val.__ob__) {
         ob = val.__ob__;
     }
-    if (isObject(val)) {
+    if (isObject(val) || isArray(val)) {
         ob = new Observer(val);
     }
     return ob;
@@ -102,7 +178,12 @@ class Observer {
         this.value = value;
         this.dep = new Dep();
         def(value, '__ob__', this);
-        this.walk(value);
+        if (isArray(value)) {
+            copyArguments(value, arrayMethods);
+            this.observeArray(value);
+        } else {
+            this.walk(value);
+        }
     }
     walk(obj) {
         let keys = Object.keys(obj);
@@ -113,7 +194,21 @@ class Observer {
     convert(key, value) {
         return defineReactive(this.value, key, value);
     }
+    observeArray(arr) {
+        arr.forEach((item) => {
+            observe(item);
+        });
+    }
 }
+const copyArguments = function (target, src) {
+    // let keys = arrayKeys;
+    let keys = Object.keys(src);
+    console.warn('keys', keys);
+    for (let i = 0, l = keys.length; i < l; i++) {
+        let key = keys[i];
+        target[key] = src[key];
+    }
+};
 
 let uid$1 = 0;
 class Watcher {

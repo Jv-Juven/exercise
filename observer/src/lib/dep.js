@@ -1,6 +1,7 @@
 let uid = 0;
 class Dep {
     constructor() {
+        // 唯一标识
         this.id = uid++;
         // 订阅者列表
         this.subs = [];
@@ -14,10 +15,10 @@ class Dep {
     }
     // 收集依赖
     depend() {
-        console.warn('watacher', Dep.target);
+        // console.warn('watacher', Dep.target);
         Dep.target.addDep(this);
         // this.subs.push(Dep.target);
-        console.warn('subs', this.subs);
+        // console.warn('subs', this.subs);
     }
     // 添加订阅者
     addSub(sub) {

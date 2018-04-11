@@ -10,6 +10,8 @@
 			<span>前面&nbsp;&#162;</span>年糕 <span>你好</span>
 		</span>
 		{{info.name}}
+		{{shops[1]}}
+		{{shops[2].name}}
 	</div>
 	<!-- <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script> -->
 	<script src="./asset/vue.js"></script>
@@ -26,7 +28,14 @@
 					message: '一段历史',
 					info: {
 						name: '亚德林'
-					}
+					},
+					shops: [
+						'adf',
+						23,
+						{
+							name: 'Myname'
+						}
+					]
 				};
 			}
 			// mounted() {
