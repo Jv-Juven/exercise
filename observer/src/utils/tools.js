@@ -20,3 +20,9 @@ export function def(obj, key, val, enumerable) {
         configurable: true
     })
 };
+// 检查是否有重复属性
+export function checkRepeat(context, attr) {
+    if (context[attr]) {
+        console.warn(`${attr}已存在`);
+    }
+};

@@ -3,9 +3,15 @@ import {
 } from 'utils';
 import Dep from './dep';
 let uid = 0;
+import {
+    isObject
+} from 'utils';
 export class Watcher {
     // expOrFn 暂时为函数
-    constructor(vm, expOrFn, cb) {
+    constructor(vm, expOrFn, cb, options) {
+        if (isObject(options)) {
+            Object.assign(this, options);
+        }
         this.depIds = [];
         this.id = uid++;
         this.oldValue = null;
@@ -33,6 +39,9 @@ export class Watcher {
     // 更新函数
     update() {
         if (isType(this.cb, 'function')) {
+            // if (this.user && this.oldValue === this.value) {
+            //     return;
+            // }
             this.cb.call(this.vm, this.get(), this.oldValue);
         }
     }

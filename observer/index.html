@@ -44,6 +44,24 @@
 				},
 				mum: function () {
 					return this.family.members[1];
+				},
+				members: function () {
+					return {
+						...this.family.members
+					};
+				}
+			},
+			watch: {
+				firstName: function (val, oldVal) {
+					console.log(`${oldVal} is ${val}`);
+				},
+				lastName: {
+					handler: function (val, oldVal) {
+						console.log(`${oldVal} is ${val}`);
+					}
+				},
+				members: function (val) {
+					console.log('members', val);
 				}
 			}
 		});

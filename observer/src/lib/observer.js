@@ -6,7 +6,7 @@ import {
 } from 'utils';
 import { arrayMethods } from './array';
 // const arrayKeys = Object.getOwnPropertyNames(arrayMethods);
-console.warn('arrayMethods', arrayMethods);
+// console.warn('arrayMethods', arrayMethods);
 export const defineReactive = function (obj, key, val) {
     let dep = new Dep();
     // 对象递归添加观察者和收集依赖
@@ -74,6 +74,7 @@ export class Observer {
         return defineReactive(this.value, key, value);
     }
     observeArray(arr) {
+        // console.log('arr', arr);
         arr.forEach((item) => {
             observe(item);
         });
@@ -82,7 +83,7 @@ export class Observer {
 export const copyArguments = function (target, src) {
     // let keys = arrayKeys;
     let keys = Object.keys(src);
-    console.warn('keys', keys);
+    // console.warn('keys', keys);
     for (let i = 0, l = keys.length; i < l; i++) {
         let key = keys[i];
         target[key] = src[key];

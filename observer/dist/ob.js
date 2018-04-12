@@ -21,6 +21,11 @@ function def(obj, key, val, enumerable) {
         writable: true,
         configurable: true
     });
+}// 检查是否有重复属性
+function checkRepeat(context, attr) {
+    if (context[attr]) {
+        console.warn(`${attr}已存在`);
+    }
 }
 
 let uid = 0;
@@ -127,7 +132,7 @@ def(
 );
 
 // const arrayKeys = Object.getOwnPropertyNames(arrayMethods);
-console.warn('arrayMethods', arrayMethods);
+// console.warn('arrayMethods', arrayMethods);
 const defineReactive = function (obj, key, val) {
     let dep = new Dep();
     // 对象递归添加观察者和收集依赖
@@ -195,6 +200,7 @@ class Observer {
         return defineReactive(this.value, key, value);
     }
     observeArray(arr) {
+        // console.log('arr', arr);
         arr.forEach((item) => {
             observe(item);
         });
@@ -203,7 +209,7 @@ class Observer {
 const copyArguments = function (target, src) {
     // let keys = arrayKeys;
     let keys = Object.keys(src);
-    console.warn('keys', keys);
+    // console.warn('keys', keys);
     for (let i = 0, l = keys.length; i < l; i++) {
         let key = keys[i];
         target[key] = src[key];
@@ -213,7 +219,10 @@ const copyArguments = function (target, src) {
 let uid$1 = 0;
 class Watcher {
     // expOrFn 暂时为函数
-    constructor(vm, expOrFn, cb) {
+    constructor(vm, expOrFn, cb, options) {
+        if (isObject(options)) {
+            Object.assign(this, options);
+        }
         this.depIds = [];
         this.id = uid$1++;
         this.oldValue = null;
@@ -241,6 +250,9 @@ class Watcher {
     // 更新函数
     update() {
         if (isType(this.cb, 'function')) {
+            // if (this.user && this.oldValue === this.value) {
+            //     return;
+            // }
             this.cb.call(this.vm, this.get(), this.oldValue);
         }
     }
@@ -261,17 +273,24 @@ const loop = function() {};
  *      - pageInstance 当前页面实例
  */
 class V {
-    constructor(options) {
-        this._options = options;
-        if (typeof options.data === 'function') {
-            this._data = options.data();
+    constructor(pageInstance) {
+        this._options = {
+            data: pageInstance.data,
+            computed: pageInstance.computed,
+            watch: pageInstance.watch
+        };
+        this.pageInstance = pageInstance;
+        if (typeof this._options.data === 'function') {
+            this._data = this._options.data();
         } else {
-            this._data = options.data;
+            this._data = this._options.data;
         }
-        this._computed = options.computed || {};
+        this._computed = this._options.computed || {};
+        this._watch = this._options.watch || {};
         this._proxy(this._data);
         observe(this._data);
         this._initComputed();
+        this._initWatch();
     }
     // 代理属性
     _proxy (data) {
@@ -281,6 +300,9 @@ class V {
         }
         let keys = Object.keys(data);
         keys.forEach((key) => {
+            if (checkRepeat(key)) {
+                return;
+            }
             Object.defineProperty(this, key, {
                 configurable: true,
                 enumerable: true,
@@ -288,6 +310,10 @@ class V {
                     return this._data[key];
                 },
                 set: function (value) {
+                    // 小程序
+                    // this.pageInstance.setData({
+                    //     [key]: value
+                    // });
                     this._data[key] = value;
                 }
             });
@@ -302,6 +328,9 @@ class V {
             let getter;
             let setter;
             let attrVal = computed[key];
+            if (checkRepeat(key)) {
+                return;
+            }
             if (isObject(attrVal)) {
                 getter = attrVal.get;
                 setter = attrVal.set;
@@ -322,16 +351,51 @@ class V {
                         if (val === value) {
                             return;
                         }
+                        // 小程序
+                        // this.pageInstance.setData({
+                        //     [key]: value
+                        // });
                         val = setter ? setter.call(self, value) : null;
                         return val;
                     }
                 });
                 new Watcher(self, getter, function (value) {
-                    console.warn('计算属性更新', value);
-                    val = value;
+                    console.warn('watcher更新', value);
+                    // val = value;
+                    self[key] = value;
                 });
             })();
         });
     }
+    _initWatch() {
+        let watch = this._watch || {};
+        let self = this;
+        let keys = Object.keys(watch);
+        keys.forEach((key) => {
+            let callback;
+            let getter = function () {
+                return this[key];
+            };
+            let attrVal = watch[key];
+            if (checkRepeat(key)) {
+                return;
+            }
+            if (isObject(attrVal)) {
+                callback = attrVal.handler || noop;
+            }
+            if (isType(attrVal, 'function')) {
+                callback = attrVal;
+            }
+            new Watcher(self, getter, callback, {
+                user: true
+            });
+        });
+    }
 }
-window.V = V;
+if (window.module && module.exports) {
+    module.exports = function (pageInstance) {
+        new V(pageInstance);
+    };
+} else {
+    window.V = V;
+}
