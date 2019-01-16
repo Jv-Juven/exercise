@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>解构</title>
+</head>
+<body>
+	<script>
+		// destructuringArray( [1,[2,4],3], "[a,[b],c]" );
+		function destructuringArray (array, arrayStr) {
+			let mapArray;
+			let mapFn;
+			let obj = {};
+			arrayStr = arrayStr.replace(/\w+/g, match => `"${match}"`);
+			mapArray = JSON.parse(arrayStr);
+			mapFn = function (mapArray, array) {
+				mapArray.forEach((value, index) => {
+					if (!Array.isArray(value)) {
+						obj[value] = array[index];
+					} else {
+						mapFn(value, array[index]);
+					}
+				});
+			};
+			mapFn(mapArray, array);
+			console.log(obj);
+			return obj;
+		}
+		destructuringArray([1,[2,6],3], "[a,[b, d],c]");
+	</script>
+</body>
+</html>

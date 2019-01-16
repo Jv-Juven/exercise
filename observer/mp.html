@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>假设这是小程序</title>
+</head>
+<body>
+<script src="./dist/ob.js"></script>
+<script>
+    var page = {
+        data: {
+            name: 'kittyRad',
+            age: 22,
+            school: {
+                name: '广州中学',
+                address: '广州花城广场'
+            },
+            friendNames: [
+                'joe',
+                'rose',
+                'bibiny',
+                {
+                    online: 'jjj',
+                    possible: 'kkk' 
+                }
+            ]
+        },
+        _data: Object.assign({}, this.data),
+        setData(val) {
+            this._data = Object.assign({}, this._data, val);
+        }
+    };
+    hack(page);
+</script>
+</body>
+</html>

@@ -9,18 +9,24 @@
 		<span class="text">
 			<span>前面&nbsp;&#162;</span>年糕 <span>你好</span>
 		</span>
+		{{count}}
 		{{info.name}}
 		{{shops[1]}}
 		{{shops[2].name}}
+		<div>
+			{{result}}
+		</div>
 	</div>
-	<!-- <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script> -->
-	<script src="./asset/vue.js"></script>
+	<div id="render"></div>
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+	<!-- <script src="./asset/vue.js"></script> -->
 	<script>
 		// function Vue() {
 		// 	console.log(this instanceof Vue);
 		// }
 		// new Vue();
 		
+		let obj = {};
 		let vm = new Vue({
 			el: "#app",
 			data: function () {
@@ -35,12 +41,26 @@
 						{
 							name: 'Myname'
 						}
-					]
+					],
+					count: 1
 				};
+			},
+			computed: {
+				result() {
+					let num = this.count + 3;
+					return num;
+				}
+			},
+			created() {
+				// this.$set(obj, 'name', 'Jacker');
+			},
+			components: {
+				txt: {
+					render() {
+						return this.$createElement('h2', '渲染测试节点');
+					}
+				}
 			}
-			// mounted() {
-			// 	this.$set(this.info, 'name', 'Jacker');
-			// }
 		});
 		console.log('vue', vm);
 
@@ -65,6 +85,21 @@
 		// console.log('a', a());
 		// console.log('b', b());
 		// console.log('b', b());
+
+		// let obj = {
+		// 	name: 'obj'
+		// };
+		// name = 'window';
+		// function intro () {
+		// 	console.log(this.name);
+		// }
+		// function bind (fn, ctx) {
+		// 	return function () {
+		// 		var l = arguments.length;
+		// 		return l > 1 ? fn.apply(ctx, arguments) : fn.call(ctx, arguments);
+		// 	}
+		// }
+		// bind(intro, obj)();
 	</script>
 </body>
 </html>

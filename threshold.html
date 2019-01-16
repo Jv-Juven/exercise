@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>threshold</title>
+</head>
+<body>
+	<script>
+		var threshold = function (fn, duration) {
+			let timeout = null;
+			let queueFns = [];
+			duration = duration || 10;
+			return function () {
+				// console.log('name', arguments);
+				// let args = Array.prototype.map.apply(arguments);
+				let args = arguments;
+				// Array.prototype.forEach.apply(arguments, function (n) { console.log('n', n) });
+				// console.log('args', args);
+				queueFns.push(function () {
+					let params = args;
+					fn.apply(this, params);
+				});
+				if (!timeout) {
+					timeout = setInterval(() => {
+						// fn.apply(this, arguments);
+						if (queueFns.length > 0) {
+							queueFns.shift()();
+						}
+						if (queueFns.length === 0) {
+							timeout = null;
+						}
+					}, duration);
+				}
+			}
+		};
+		var say = threshold(function (name) {
+			console.log(`helo, ${name}`, arguments);
+		}, 1000);
+		say('李荣基');
+		say('朱元璋');
+		say('李媛');
+		say('朱孝天');
+	</script>
+</body>
+</html>
